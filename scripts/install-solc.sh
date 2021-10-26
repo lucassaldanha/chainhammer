@@ -1,4 +1,4 @@
-SOLC_VERSION=v0.4.25
+SOLC_VERSION=v0.5.17
 INSTALLPATH=/usr/local/bin
 
 echo

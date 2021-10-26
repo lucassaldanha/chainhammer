@@ -129,3 +129,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Jetbrains
+.idea
+*.iml
+
+# MacOS
+.DS_Store

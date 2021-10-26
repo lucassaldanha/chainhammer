@@ -116,7 +116,12 @@ def contract_CompileDeploySave(contract_source_file):
     compile, deploy, save
     """
     contractName, contract_interface = compileContract(contract_source_file)
-    print ("unlock: ", unlockAccount())
+
+    if NODENAME == "besu":
+        print ("Skip unlock (Besu)") # Besu does not require unlock
+    else:
+        print ("unlock: ", unlockAccount())
+
     contractAddress = deployContract(contract_interface)
     saveToDisk(contractAddress, abi=contract_interface["abi"])
     return contractName, contract_interface, contractAddress

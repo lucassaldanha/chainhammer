@@ -1,12 +1,12 @@
 // simplestorage contract
 // chainhammer v46
 
-pragma solidity ^0.4.21;
+pragma solidity ^0.5.17;
 
 contract simplestorage {
   uint public storedData;
 
-  function set(uint x) {
+  function set(uint x) public {
     storedData = x;        // uses ~26691 gas
     
     // try failing transactions:
@@ -16,7 +16,7 @@ contract simplestorage {
     // require ( 1 == 0 ); // uses 41714 gas
   }
 
-  function get() constant returns (uint retVal) {
+  function get() view public returns (uint retVal) {
     return storedData;
   }
 }

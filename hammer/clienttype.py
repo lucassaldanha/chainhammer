@@ -128,7 +128,7 @@ def clientType(w3):
     nodeString = w3.version.node
     
     nodeName = nodeString.split("/")[0] 
-    known = ("Geth", "Parity", "Parity-Ethereum", "Energy Web", "TestRPC")
+    known = ("Geth", "Parity", "Parity-Ethereum", "Energy Web", "TestRPC", "besu")
     if nodeName not in known:
         print ("Interesting, '%s', a new node type? '%s'" % (nodeName, nodeString))
     
@@ -172,13 +172,14 @@ def clientType(w3):
             pass
 
     
-    if nodeName=="Geth":
+    if nodeName=="Geth" or nodeName=="besu":
         # TODO: This can still not distinguish between vanilla geth, and quorum RAFT. 
         try:
             answer = curl_post(method="admin_nodeInfo")
             
             answer_config = answer['protocols']['eth'].get('config', None)
             if answer_config:
+                consensus = "istanbul" # forcing this to instanbul to make it work with Besu
                 if "clique" in answer_config:
                     consensus="clique"
                 if "ethash" in answer_config:

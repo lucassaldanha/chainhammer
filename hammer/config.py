@@ -14,8 +14,22 @@
 
 # better keep the same port :8545 everywhere, and instead
 # patch the docker-compose.yml files, see ../networks/quorum-configure.sh
-RPCaddress='http://localhost:8545'
-RPCaddress2='http://localhost:8545'
+
+### GoQuorum QBS Development ###
+# RPCaddress='https://transaction-1.qbsgrootperftestdev.qbsgrootperftestdev.onquorum.net:3200/oRDacpwnIYueWlSA7VUYNB56'
+# RPCaddress2='https://transaction-1.qbsgrootperftestdev.qbsgrootperftestdev.onquorum.net:3200/oRDacpwnIYueWlSA7VUYNB56'
+
+### GoQuorum QBS Business ###
+# RPCaddress='https://transaction-1.qbsgrootperftestbusiness.qbsgrootperftestbusiness.onquorum.net:3200/1wqLIlLMFhseAEmSa6GUaSQz'
+# RPCaddress2='https://transaction-1.qbsgrootperftestbusiness.qbsgrootperftestbusiness.onquorum.net:3200/1wqLIlLMFhseAEmSa6GUaSQz'
+
+### Besu QBS Business ###
+RPCaddress='http://13.76.100.119:9545'
+RPCaddress2='http://13.76.100.119:9545'
+
+### Local Nodes ###
+#RPCaddress='http://localhost:9545'
+#RPCaddress2='http://localhost:9545'
 
 # use this for unittesting with TestRPCProvider
 # RPCaddress, RPCaddress2 = None, None
