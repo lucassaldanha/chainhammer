@@ -16,20 +16,24 @@
 # patch the docker-compose.yml files, see ../networks/quorum-configure.sh
 
 ### GoQuorum QBS Development ###
+# BaseAccount='0x590ebBAbf71dc81b5AB6c5C783C2c3566691CE9F'
 # RPCaddress='https://transaction-1.qbsgrootperftestdev.qbsgrootperftestdev.onquorum.net:3200/oRDacpwnIYueWlSA7VUYNB56'
 # RPCaddress2='https://transaction-1.qbsgrootperftestdev.qbsgrootperftestdev.onquorum.net:3200/oRDacpwnIYueWlSA7VUYNB56'
 
 ### GoQuorum QBS Business ###
+# BaseAccount='0x1c8A0C0f18C76Fca9936b89a66420EA71d4dd3fB'
 # RPCaddress='https://transaction-1.qbsgrootperftestbusiness.qbsgrootperftestbusiness.onquorum.net:3200/1wqLIlLMFhseAEmSa6GUaSQz'
 # RPCaddress2='https://transaction-1.qbsgrootperftestbusiness.qbsgrootperftestbusiness.onquorum.net:3200/1wqLIlLMFhseAEmSa6GUaSQz'
 
 ### Besu QBS Business ###
+BaseAccount='0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73'
 RPCaddress='http://13.76.100.119:9545'
 RPCaddress2='http://13.76.100.119:9545'
 
 ### Local Nodes ###
-#RPCaddress='http://localhost:9545'
-#RPCaddress2='http://localhost:9545'
+# BaseAccount='0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73'
+# RPCaddress='http://localhost:9545'
+# RPCaddress2='http://localhost:9545'
 
 # use this for unittesting with TestRPCProvider
 # RPCaddress, RPCaddress2 = None, None
@@ -93,7 +97,8 @@ if PARITY_UNLOCK_EACH_TRANSACTION and ROUTE=="RPC":
 # a successful transaction; because difference is used as sign for a FAILED
 # transaction in the case of those clients which do not have a
 # 'transactionReceipt.status' field yet
-GAS_FOR_SET_CALL = 90000
+GAS_FOR_SET_CALL = 50000
+#GAS_FOR_SET_CALL = 90000
 
 # only for Quorum:
 # set this to a list of public keys for privateFor-transactions,

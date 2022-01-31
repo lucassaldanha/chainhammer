@@ -28,9 +28,11 @@ import web3
 from web3 import Web3, HTTPProvider # pip3 install web3
 from web3.utils.abi import filter_by_name, abi_to_signature
 from web3.utils.encoding import pad_hex
+from web3 import Account
 
 # chainhammer:
 from hammer.config import RPCaddress, ROUTE, PRIVATE_FOR, EXAMPLE_ABI
+from hammer.config import BaseAccount
 from hammer.config import PARITY_UNLOCK_EACH_TRANSACTION
 from hammer.config import GAS_FOR_SET_CALL
 from hammer.config import FILE_LAST_EXPERIMENT, EMPTY_BLOCKS_AT_END
@@ -136,8 +138,11 @@ def timeit_argument_encoding():
     # no need to precalculate, it takes near to no time:
     print ("Doing that %d times ... took %.2f seconds" % (reps, timer) )
 
+def contract_get_via_web3(contract):
+    answer = contract.functions.get().call()
+    print('contract.get(): {}'.format(answer))
 
-def contract_set_via_RPC(contract, arg, hashes = None, privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
+def contract_set_via_RPC(sender, nonce, contract, arg, hashes = None, privateFor=PRIVATE_FOR, gas=GAS_FOR_SET_CALL):
     """
     call the .set(arg) method numTx=10
     not going through web3
@@ -146,21 +151,36 @@ def contract_set_via_RPC(contract, arg, hashes = None, privateFor=PRIVATE_FOR, g
     suggestion by @jpmsam 
     https://github.com/jpmorganchase/quorum/issues/346#issuecomment-382216968
     """
-    
+
     method_ID = contract_method_ID("set", contract.abi) # TODO: make this "set" flexible for any method name
     data = argument_encoding(method_ID, arg)
-    txParameters = {'from': w3.eth.defaultAccount, 
-                    'to' : contract.address,
-                    'gas' : w3.toHex(gas),
-                    'data' : data} 
+    txParameters = {'from': sender.address,
+                    'to': contract.address,
+                    'gas': w3.toHex(gas),
+                    'data': data,
+                    'nonce': w3.toHex(nonce),
+                    'gasPrice': w3.toHex(0)}
+    # txParameters = {'from': w3.eth.defaultAccount,
+    #                 'to' : contract.address,
+    #                 'gas' : w3.toHex(gas),
+    #                 'data' : data}
     if privateFor:
         txParameters['privateFor'] = privateFor  # untested
-    
-    method = 'eth_sendTransaction'
-    payload= {"jsonrpc" : "2.0",
-               "method" : method,
-               "params" : [txParameters],
-               "id"     : 1}
+
+    signedTx = Account.signTransaction(txParameters, sender.privateKey)
+
+    method = 'eth_sendRawTransaction'
+    payload = {"jsonrpc": "2.0",
+               "method": method,
+               "params": [signedTx.rawTransaction.hex()],
+               "id": 1}
+
+    # method = 'eth_sendTransaction'
+    # payload= {"jsonrpc" : "2.0",
+    #            "method" : method,
+    #            "params" : [txParameters],
+    #            "id"     : 1}
+
     headers = {'Content-type' : 'application/json'}
     response = requests.post(RPCaddress, json=payload, headers=headers)
     # print('raw json response: {}'.format(response.json()))
@@ -168,7 +188,9 @@ def contract_set_via_RPC(contract, arg, hashes = None, privateFor=PRIVATE_FOR, g
         
     # print ("[sent directly via RPC]", end=" ") # TODO: not print this here but at start
     print (".", end=" ") # TODO: not print this here but at start
-    
+
+    contract_get_via_web3(contract)
+
     if not hashes==None:
         hashes.append(tx)
     return tx
@@ -262,9 +284,12 @@ def many_transactions_threaded_Queue(contract, numTx, num_worker_threads=25):
     txs = [] # container to keep all transaction hashes
     
     def worker():
+        sender = Account.create()
+        nonce = 0
         while True:
             item = q.get()
-            contract_set(contract, item, txs)
+            contract_set(sender, nonce, contract, item, txs)
+            nonce = nonce + 1
             print ("T", end=""); sys.stdout.flush()
             q.task_done()
 
@@ -634,7 +659,7 @@ def sendmany(contract):
     if len(sys.argv)==2 or sys.argv[2]=="sequential":
         
         # blocking, non-async
-        txs=many_transactions_consecutive(contract, numTransactions)  
+        txs=many_transactions_consecutive(contract, numTransactions)
         
     elif sys.argv[2]=="threaded1":
         txs=many_transactions_threaded(contract, numTransactions)
@@ -669,19 +694,19 @@ def sendmany(contract):
 
 
 if __name__ == '__main__':
-    
+
     check_CLI_or_syntax_info_and_exit()
 
     global w3, NODENAME, NODETYPE, NODEVERSION, CONSENSUS, NETWORKID, CHAINNAME, CHAINID
-    w3, chainInfos = web3connection(RPCaddress=RPCaddress, account=None)
+    w3, chainInfos = web3connection(RPCaddress=RPCaddress, account=BaseAccount)
     NODENAME, NODETYPE, NODEVERSION, CONSENSUS, NETWORKID, CHAINNAME, CHAINID = chainInfos
-    
+
     # wait_some_blocks(0); exit()
     # timeit_argument_encoding(); exit()
     # try_contract_set_via_web3(contract); exit()
     # try_contract_set_via_RPC(contract);  exit()
 
-    w3.eth.defaultAccount = w3.eth.accounts[0] # set first account as sender
+    # w3.eth.defaultAccount = w3.eth.accounts[0] # set first account as sender
     contract = initialize_fromAddress()
 
     txs = sendmany(contract)

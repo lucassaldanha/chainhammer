@@ -70,6 +70,8 @@ def start_web3connection(RPCaddress=None, account=None):
     if not account:
         w3.eth.defaultAccount = w3.eth.accounts[0] # set first account as sender
         accountname="first"
+    else:
+        w3.eth.defaultAccount = account
     print (accountname + " account of node is", w3.eth.defaultAccount, end=", ")
     print ("balance is %s Ether" % w3.fromWei(w3.eth.getBalance(w3.eth.defaultAccount), "ether"))
     

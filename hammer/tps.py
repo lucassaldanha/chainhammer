@@ -21,7 +21,7 @@ if __name__ == '__main__' and __package__ is None:
     from os import sys, path
     sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
     
-from hammer.config import RPCaddress2, FILE_LAST_EXPERIMENT, AUTOSTOP_TPS, EMPTY_BLOCKS_AT_END
+from hammer.config import RPCaddress2, FILE_LAST_EXPERIMENT, AUTOSTOP_TPS, EMPTY_BLOCKS_AT_END, BaseAccount
 from hammer.deploy import loadFromDisk, FILE_CONTRACT_ADDRESS
 from hammer.clienttools import web3connection, getBlockTransactionCount
     
@@ -257,7 +257,7 @@ def addMeasurementToFile(peakTpsAv, finalTpsAv, start_epochtime, fn=FILE_LAST_EX
 if __name__ == '__main__':
     
     global w3, NODENAME, NODETYPE, NODEVERSION, CONSENSUS, NETWORKID, CHAINNAME, CHAINID
-    w3, chainInfos = web3connection(RPCaddress=RPCaddress2, account=None)
+    w3, chainInfos = web3connection(RPCaddress=RPCaddress2, account=BaseAccount)
     NODENAME, NODETYPE, NODEVERSION, CONSENSUS, NETWORKID, CHAINNAME, CHAINID = chainInfos
     
     blockNumber_before = w3.eth.blockNumber
